@@ -6,5 +6,6 @@ Rails.application.routes.draw do
 
   scope(:path => '/api') do
     resources :users, only: [:create]
+    resources :courses, only: [:create]
   end
 end
