@@ -1,0 +1,2 @@
+class CourseTalentAssociation < ApplicationRecord
+end
