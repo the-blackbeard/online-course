@@ -3,4 +3,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "articles#index"
+
+  scope(:path => '/api') do
+    resources :users, only: [:create]
+  end
 end
