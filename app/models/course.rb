@@ -1,6 +1,7 @@
 class Course < ApplicationRecord
-  belongs_to :author, class_name: 'User'
-  has_many :talents, class_name: 'User', through: :course_talent_association
+  # belongs_to :author, class_name: 'User'
+  has_many :course_talent_associations
+  has_many :talents, through: :course_talent_associations
 
   validates_presence_of :course_title, :course_description, :course_length
   validates :course_length, numericality: { greater_than_or_equal_to: 0 }
