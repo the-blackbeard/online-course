@@ -13,6 +13,8 @@ class CourseServices::Create
 
     ActiveRecord::Base.transaction do
       create_course
+      create_author unless @valid
+      create_course_author_association unless @valid
 
       raise ActiveRecord::Rollback if @valid
     end
@@ -24,7 +26,6 @@ class CourseServices::Create
     errors = []
 
     errors << "Course params not present" if @context.blank?
-    errors << "Author not present" if !validate_author
 
     @context[:errors] = errors
     return @valid = errors.present?
@@ -42,12 +43,45 @@ class CourseServices::Create
     end
   end
 
-  def validate_author
-    author = User.find_by_id(@context["course"]["author_id"])
-    if author.present?
-      return true
+  def create_author
+    if @context["author"]["email"].present?
+      user = User.find_by(email: @context["author"]["email"])
+
+      if user.present?
+        @author = user
+      else
+        result = UserServices::Create.new({user: @context["author"]})
+        response = result.execute
+
+        if response.errors.present?
+          @context[:errors] = response.errors
+          @valid = true
+        else
+          @author = response.result
+        end
+      end
     else
-      return false
+      @context[:errors] = ["Author email id not present"]
+      @valid = true
     end
+  end
+
+  def create_course_author_association
+    @course_author_association = CourseTalentAssociation.new(course_author_association)
+
+    unless @course_author_association.save
+      @context[:errors] = @course_author_association.errors.full_messages
+      @valid = true
+    end
+  end
+
+  def course_author_association
+    params = {
+      user_id: @author.id,
+      course_id: @course.id,
+      user_type: CourseTalentAssociation.user_types[:author]
+    }
+
+    params
   end
 end

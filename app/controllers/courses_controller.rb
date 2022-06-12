@@ -19,8 +19,13 @@ class CoursesController < ApplicationController
         :course_description,
         :course_length,
         :course_start_date,
-        :course_end_date,
-        :author_id
+        :course_end_date
+      ],
+      author: [
+        :first_name,
+        :last_name,
+        :email,
+        :phone_number
       ]
     )
   end
